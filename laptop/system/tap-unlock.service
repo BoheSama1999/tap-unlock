@@ -1,0 +1,41 @@
+[Unit]
+Description=Tap Unlock (NFC tap on phone -> BLE challenge/response -> unlock / sudo / pkexec)
+After=dbus.service bluetooth.service
+Wants=bluetooth.service
+
+[Service]
+Type=simple
+User=tapunlock
+Group=tapunlock
+EnvironmentFile=/etc/tap-unlock/tap-unlock.conf
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 -I /usr/local/lib/tap-unlock/tapunlockd.py
+Restart=on-failure
+RestartSec=2
+RuntimeDirectory=tap-unlock
+RuntimeDirectoryMode=0700
+UMask=0077
+
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,5 @@
+polkit.addRule(function (action, subject) {
+    if (action.id == "org.freedesktop.login1.lock-sessions" && subject.user == "tapunlock") {
+        return polkit.Result.YES;
+    }
+});
