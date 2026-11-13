@@ -59,7 +59,12 @@ android/build.sh        # 需要 Android SDK build-tools + platform，输出 and
 
 - 要求 Android 12 及以上，手机需要支持 NFC 和 LE 扩展广播。
 - 第一次打开时授予「附近设备」权限，然后复制或分享公钥。
-- 用 NFC Tools 之类的工具往贴片写一条 URI 记录：`nekotype://unlock`。
+- 用 NFC Tools 之类的工具往贴片依次写入两条记录，顺序不能反：
+  1. URI 记录：`nekotype://unlock`；
+  2. 应用程序记录（AAR，`android.com:pkg`）：`xyz.bohesama.tapunlock`。
+
+  只写 URI 时，系统的 NFC 服务会先弹窗问「是否打开应用处理卡片」（HyperOS、Android 15 及以上都会这样）。
+  有了 AAR，系统就跳过确认直接拉起 App。两条记录在 NTAG213 及以上的贴片里都放得下。
 - 签名 keystore 会自动生成在 `~/.android/tap-unlock.jks`，不进 git。
 
 ## 测试

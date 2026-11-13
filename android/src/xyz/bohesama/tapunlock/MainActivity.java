@@ -94,6 +94,9 @@ public class MainActivity extends Activity {
         status.setText("蓝牙权限：" + (bluetooth ? "已授予" : "未授予")
                 + "\nNFC：" + (nfc == null ? "不支持" : nfc.isEnabled() ? "已开启" : "未开启")
                 + "\n\n把下面的公钥放到电脑 /etc/tap-unlock/keys/ 下（.pem 结尾）。"
-                + "\n贴片写入 URI：nekotype://unlock");
+                + "\n\n贴片依次写入两条记录（顺序不能反）："
+                + "\n1. URI：nekotype://unlock"
+                + "\n2. 应用程序记录（AAR）：" + getPackageName()
+                + "\n只写 URI 时系统会先弹窗确认，加上 AAR 后直接打开。");
     }
 }
