@@ -32,15 +32,18 @@
 
 - 守护进程以无特权的系统用户 `tapunlock` 运行，带 systemd 沙箱（只允许 AF_UNIX 套接字，没有任何 capability）。
   解锁屏幕的权限由一条 polkit 规则单独授予这个用户。
-- PAM 那一行配置是 `sufficient` + `pam_exec seteuid`。守护进程的套接字只接受 uid 0 的连接，
-  普通进程无法伪造认证请求。守护进程没运行、蓝牙关闭或者超时，都会照常回落到密码。
+- PAM 那一行是 `sufficient` + 自带的 `pam_tapunlock.so`：它在等手机的同时就弹出密码提示，
+  先贴手机就直接放行，先输完密码就交给后面的 `pam_unix` 照常校验（失败计数照旧）。
+  守护进程的套接字只接受 uid 0 的连接，模块也只认 `tapunlock` 用户开的套接字，
+  普通进程无法伪造认证请求或放行结果。守护进程没运行、蓝牙关闭或者超时，都只剩密码这一条路。
 - 锁屏状态下碰手机只会解锁屏幕，不会顺带放行任何 sudo / pkexec。
 - 私钥生成在手机的 TEE 里，不能导出（`setUnlockedDeviceRequired`），电脑上只存公钥。
 - 不能防的情况：手机丢失并且已被解锁；有人在你本人碰贴片的同时做实时中继。
 
 ## 电脑端安装
 
-依赖：`python`、`python-dbus`、`python-gobject`、`python-cryptography`、`bluez`、`polkit`。
+依赖：`python`、`python-dbus`、`python-gobject`、`python-cryptography`、`bluez`、`polkit`，
+以及编译 PAM 模块用的 `gcc` 和 `pam`（头文件）。
 
 ```sh
 sudo ./install.sh <桌面用户名>
@@ -48,7 +51,8 @@ sudo ./install.sh <桌面用户名>
 wl-paste | sudo tee /etc/tap-unlock/keys/phone.pem
 ```
 
-`/etc/tap-unlock/tap-unlock.conf` 里可以改等待时间（`TAPUNLOCK_WAIT`）。
+`/etc/tap-unlock/tap-unlock.conf` 里可以改等待手机的时间（`TAPUNLOCK_WAIT`，默认 20 秒；
+只影响手机这一路，密码随时可以输）。
 卸载用 `sudo ./uninstall.sh`。
 
 ## 手机 App

@@ -26,7 +26,7 @@ ADV_PATH = "/xyz/bohesama/tapunlock/advertisement0"
 SOCKET_PATH = os.environ.get("TAPUNLOCK_SOCKET", "/run/tap-unlock/pam.sock")
 KEY_DIR = os.environ.get("TAPUNLOCK_KEY_DIR", "/etc/tap-unlock/keys")
 TARGET_USER = os.environ["TAPUNLOCK_USER"]
-WAIT_SECONDS = int(os.environ.get("TAPUNLOCK_WAIT", "10"))
+WAIT_SECONDS = int(os.environ.get("TAPUNLOCK_WAIT", "20"))
 ADV_INTERVAL_MS = 100
 
 log = logging.getLogger("tap-unlockd")
